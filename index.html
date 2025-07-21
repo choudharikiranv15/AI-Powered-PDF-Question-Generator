@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI PDF Question Generator (Advanced)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .loader {
+            border-top-color: #3498db;
+            animation: spinner 1.5s linear infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Advanced AI PDF Question Generator</h1>
+            <p class="text-md text-gray-600 mt-2">Let AI read the PDF page and generate a new question for you.</p>
+        </header>
+
+        <main class="bg-white p-6 rounded-2xl shadow-lg space-y-6">
+            <!-- Step 1: Setup -->
+            <div>
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2">1. Setup</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="pdf-upload" class="block text-sm font-medium text-gray-700 mb-1">Upload PDF File</label>
+                        <input type="file" id="pdf-upload" accept=".pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"/>
+                    </div>
+                    <div>
+                        <label for="api-key" class="block text-sm font-medium text-gray-700 mb-1">Enter Google AI API Key</label>
+                        <input type="password" id="api-key" placeholder="Enter your API key here" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Question Selection -->
+            <div>
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2">2. Generate Question</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                    <div>
+                        <label for="question-number-input" class="block text-sm font-medium text-gray-700 mb-1">Enter Question Number</label>
+                        <input type="number" id="question-number-input" placeholder="e.g., 5" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <button id="generate-btn" class="w-full bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out disabled:bg-gray-400">
+                        Generate with AI
+                    </button>
+                </div>
+            </div>
+
+            <!-- Status and Result Section -->
+            <div id="status-section" class="text-center my-4 hidden">
+                <div class="flex items-center justify-center">
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mr-3"></div>
+                    <p id="status-message" class="text-lg font-medium text-gray-700"></p>
+                </div>
+            </div>
+
+            <div id="result-section" class="mt-8 hidden">
+                <h2 class="text-2xl font-semibold mb-4 border-b pb-2">AI Generated Result</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <div id="original-page-display" class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                         <h3 class="text-lg font-semibold mb-2 text-gray-800">Original Page</h3>
+                         <img id="page-image" class="w-full rounded-md shadow-sm" alt="PDF Page Image">
+                    </div>
+                    <div id="ai-result-box" class="p-4 bg-blue-50 rounded-lg border border-blue-200 text-gray-800 prose max-w-none">
+                        <!-- AI result will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center mt-8 text-sm text-gray-500">
+            <p>Built with PDF.js, Tailwind CSS, and the Google Gemini API.</p>
+        </footer>
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+
+        const pdfUploadInput = document.getElementById('pdf-upload');
+        const apiKeyInput = document.getElementById('api-key');
+        const questionNumberInput = document.getElementById('question-number-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const statusSection = document.getElementById('status-section');
+        const statusMessage = document.getElementById('status-message');
+        const resultSection = document.getElementById('result-section');
+        const pageImage = document.getElementById('page-image');
+        const aiResultBox = document.getElementById('ai-result-box');
+
+        let pdfFile = null;
+
+        pdfUploadInput.addEventListener('change', (event) => {
+            pdfFile = event.target.files[0];
+        });
+
+        /**
+         * Renders a specific page of a PDF to a canvas and returns it as a Data URL.
+         */
+        async function getPageAsImage(pdfDoc, pageNum) {
+            const page = await pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1.5 }); // Higher scale for better quality
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
+            return canvas.toDataURL('image/png');
+        }
+
+        /**
+         * Finds which page a given question number is on.
+         * This is a simplified text search.
+         */
+        async function findPageForQuestion(pdfDoc, questionNumber) {
+            const questionPattern = `${questionNumber}.`;
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                const page = await pdfDoc.getPage(i);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map(item => item.str).join(' ');
+                if (pageText.includes(questionPattern)) {
+                    return i;
+                }
+            }
+            return null; // Question number not found
+        }
+
+        /**
+         * Main generation logic.
+         */
+        generateBtn.addEventListener('click', async () => {
+            const apiKey = apiKeyInput.value.trim();
+            const questionNumber = questionNumberInput.value;
+
+            if (!pdfFile || !apiKey || !questionNumber) {
+                alert('Please upload a PDF, enter an API key, and specify a question number.');
+                return;
+            }
+
+            statusSection.classList.remove('hidden');
+            resultSection.classList.add('hidden');
+            generateBtn.disabled = true;
+
+            try {
+                statusMessage.textContent = 'Loading PDF...';
+                const typedarray = new Uint8Array(await pdfFile.arrayBuffer());
+                const pdfDoc = await pdfjsLib.getDocument({ data: typedarray }).promise;
+
+                statusMessage.textContent = `Finding page for question #${questionNumber}...`;
+                const pageNum = await findPageForQuestion(pdfDoc, questionNumber);
+
+                if (!pageNum) {
+                    throw new Error(`Could not find question number ${questionNumber} in the PDF.`);
+                }
+
+                statusMessage.textContent = `Rendering page ${pageNum}...`;
+                const imageDataUrl = await getPageAsImage(pdfDoc, pageNum);
+                pageImage.src = imageDataUrl;
+
+                statusMessage.textContent = 'Asking AI to generate a new question... 🤖';
+                const newQuestion = await callGeminiApi(apiKey, imageDataUrl, questionNumber);
+
+                aiResultBox.innerHTML = newQuestion.replace(/\n/g, '<br>');
+                resultSection.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Generation failed:', error);
+                alert(`An error occurred: ${error.message}`);
+            } finally {
+                statusSection.classList.add('hidden');
+                generateBtn.disabled = false;
+            }
+        });
+
+        /**
+         * Calls the Google Gemini API with the page image and prompt.
+         */
+        async function callGeminiApi(apiKey, imageDataUrl, questionNumber) {
+            const model = 'gemini-1.5-flash';
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+            
+            const prompt = `Analyze the provided image, which is a page from a 1st-grade math worksheet. Your task is to focus specifically on question number ${questionNumber}. 
+            
+First, identify the text and any visual elements associated with question ${questionNumber}. 
+Then, create one new, different math question that is suitable for a 1st grader, based on the visual information for that specific question.
+
+Generate only the new question text, without any extra explanation or preamble.`;
+
+            const imageBase64 = imageDataUrl.split(',')[1];
+            const requestBody = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        { inline_data: { mime_type: 'image/png', data: imageBase64 } }
+                    ]
+                }]
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error.message || 'API request failed');
+            }
+
+            const data = await response.json();
+            if (!data.candidates || !data.candidates[0].content.parts[0].text) {
+                throw new Error("The AI did not return a valid response. Please try again.");
+            }
+            return data.candidates[0].content.parts[0].text;
+        }
+    </script>
+</body>
+</html>

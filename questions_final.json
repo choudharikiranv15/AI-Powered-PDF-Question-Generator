@@ -1,0 +1,481 @@
+[
+    {
+        "question_number": 1,
+        "question_text": "Find the next figures in the figure pattern given below. ",
+        "images": [
+            "extracted_images/page_1_img_1.png"
+        ],
+        "options": {
+            "A": "[B]",
+            "C": "[D]",
+            "D": ""
+        },
+        "option_images": {},
+        "answer": "Not Found"
+    },
+    {
+        "question_number": 2,
+        "question_text": "Complete the number pattern. ",
+        "images": [
+            "extracted_images/page_1_img_7.png"
+        ],
+        "options": {
+            "A": "[B]"
+        },
+        "option_images": {},
+        "answer": "Not Found"
+    },
+    {
+        "question_number": 3,
+        "question_text": "In the questions given below, the series with one or more ",
+        "images": [
+            "extracted_images/page_2_img_3.png"
+        ],
+        "options": {
+            "A": "19",
+            "B": "18",
+            "C": "",
+            "D": "20"
+        },
+        "option_images": {},
+        "answer": "C"
+    },
+    {
+        "question_number": 4,
+        "question_text": "Number of the groups of 9 paper clips (",
+        "images": [
+            "extracted_images/page_2_img_4.png"
+        ],
+        "options": {
+            "A": "2",
+            "B": "3",
+            "C": "9",
+            "D": ""
+        },
+        "option_images": {},
+        "answer": "D"
+    },
+    {
+        "question_number": 5,
+        "question_text": "How many bananas are kept outside the basket? ",
+        "images": [
+            "extracted_images/page_2_img_6.png"
+        ],
+        "options": {
+            "A": "1",
+            "B": "2",
+            "C": "3",
+            "D": "4"
+        },
+        "option_images": {},
+        "answer": "Not Found"
+    },
+    {
+        "question_number": 6,
+        "question_text": "A programme of children ended at the time shown on the ",
+        "images": [
+            "extracted_images/page_3_img_1.png"
+        ],
+        "options": {
+            "A": "6: 00",
+            "B": "",
+            "C": "7: 00",
+            "D": "None of these"
+        },
+        "option_images": {},
+        "answer": "B"
+    },
+    {
+        "question_number": 7,
+        "question_text": "Suresh had 112 bookmarks. He gives some bookmarks to her ",
+        "images": [],
+        "options": {
+            "A": "110",
+            "B": "125",
+            "C": "",
+            "D": "130"
+        },
+        "option_images": {},
+        "answer": "C"
+    },
+    {
+        "question_number": 8,
+        "question_text": "Count and write the amount of money. ",
+        "images": [],
+        "options": {
+            "A": "Rs 70.00 [B] Rs 76.01",
+            "C": "Rs 75.40 [D] Rs 80.04",
+            "B": ""
+        },
+        "option_images": {},
+        "answer": "B"
+    },
+    {
+        "question_number": 9,
+        "question_text": "Six cats are numbered as follows: ",
+        "images": [
+            "extracted_images/page_4_img_2.png"
+        ],
+        "options": {
+            "A": "[B]"
+        },
+        "option_images": {},
+        "answer": "Not Found"
+    },
+    {
+        "question_number": 10,
+        "question_text": "Sonia bought 45 candies. She gave 22 cookies to her sister. ",
+        "images": [
+            "extracted_images/page_5_img_3.png"
+        ],
+        "options": {
+            "A": "42",
+            "B": "",
+            "C": "50",
+            "D": "43"
+        },
+        "option_images": {},
+        "answer": "B"
+    },
+    {
+        "question_number": 11,
+        "question_text": "Which of the following is greatest? ",
+        "images": [
+            "extracted_images/page_5_img_3.png"
+        ],
+        "options": {
+            "D": ""
+        },
+        "option_images": {},
+        "answer": "D"
+    },
+    {
+        "question_number": 12,
+        "question_text": "Write \u2018+\u2019 or \u2018\u2013\u2019 in each ",
+        "images": [
+            "extracted_images/page_5_img_4.png"
+        ],
+        "options": {
+            "A": "+, +",
+            "B": "",
+            "C": "\u2013, \u2013",
+            "D": "\u2013, +"
+        },
+        "option_images": {},
+        "answer": "B"
+    },
+    {
+        "question_number": 13,
+        "question_text": "Object _______________ is the heaviest. ",
+        "images": [],
+        "options": {
+            "A": "3",
+            "B": "5",
+            "C": "Direction (Q.No.14 & 15): Study the diagram below and",
+            "D": "1"
+        },
+        "option_images": {},
+        "answer": "C"
+    },
+    {
+        "question_number": 14,
+        "question_text": "The length of BD is 1 cm less than the total length of AB ",
+        "images": [],
+        "options": {
+            "A": "5",
+            "B": "",
+            "C": "8",
+            "D": "9"
+        },
+        "option_images": {},
+        "answer": "B"
+    },
+    {
+        "question_number": 15,
+        "question_text": "The length of CD is twice that of BC. What is the length of ",
+        "images": [],
+        "options": {
+            "A": "A",
+            "B": "31 cm",
+            "C": "42 cm",
+            "D": "38 cm"
+        },
+        "option_images": {},
+        "answer": "A"
+    },
+    {
+        "question_number": 16,
+        "question_text": "Which of the following clocks shows 30 minutes after 4 ",
+        "images": [],
+        "options": {
+            "A": "[B]",
+            "C": "[D]",
+            "B": ""
+        },
+        "option_images": {},
+        "answer": "B"
+    },
+    {
+        "question_number": 17,
+        "question_text": "Sent gold High School has 453 students. It has 23 more ",
+        "images": [],
+        "options": {
+            "A": "400",
+            "B": "12",
+            "C": "403",
+            "D": "340"
+        },
+        "option_images": {},
+        "answer": "B"
+    },
+    {
+        "question_number": 18,
+        "question_text": "Tanshu spent Rs 35.70 on a ball and Rs 50.30 on a toy car. ",
+        "images": [],
+        "options": {
+            "A": "Rs 80",
+            "B": "Rs 85",
+            "C": "Rs 58",
+            "D": ""
+        },
+        "option_images": {},
+        "answer": "D"
+    },
+    {
+        "question_number": 19,
+        "question_text": "Which tree has apples more than 6 but less than 9? ",
+        "images": [
+            "extracted_images/page_8_img_1.png"
+        ],
+        "options": {
+            "A": "[B]",
+            "C": "[D]",
+            "B": ""
+        },
+        "option_images": {},
+        "answer": "B"
+    },
+    {
+        "question_number": 20,
+        "question_text": "Which abacus shows 15 \u2013 13 = 13? ",
+        "images": [
+            "extracted_images/page_8_img_5.png"
+        ],
+        "options": {
+            "A": "[B]",
+            "C": ""
+        },
+        "option_images": {},
+        "answer": "C"
+    },
+    {
+        "question_number": 21,
+        "question_text": "Which of the following is smallest? ",
+        "images": [],
+        "options": {
+            "C": ""
+        },
+        "option_images": {},
+        "answer": "C"
+    },
+    {
+        "question_number": 22,
+        "question_text": "6 hundreds 3 tens 2 ones \u2013 3 hundreds 2 tens 6 ones = ",
+        "images": [
+            "extracted_images/page_9_img_2.png"
+        ],
+        "options": {
+            "A": "",
+            "B": "360",
+            "C": "603",
+            "D": "305"
+        },
+        "option_images": {},
+        "answer": "A"
+    },
+    {
+        "question_number": 23,
+        "question_text": "What does  ",
+        "images": [
+            "extracted_images/page_9_img_2.png"
+        ],
+        "options": {
+            "A": "7",
+            "B": "5",
+            "C": "3",
+            "D": ""
+        },
+        "option_images": {},
+        "answer": "D"
+    },
+    {
+        "question_number": 24,
+        "question_text": "A number bond is shown below. ",
+        "images": [
+            "extracted_images/page_9_img_5.png"
+        ],
+        "options": {
+            "A": "35",
+            "B": "43",
+            "C": "52",
+            "D": "25"
+        },
+        "option_images": {},
+        "answer": "Not Found"
+    },
+    {
+        "question_number": 25,
+        "question_text": "Tanya has following two pencils. ",
+        "images": [
+            "extracted_images/page_10_img_1.png"
+        ],
+        "options": {
+            "A": "7 units",
+            "B": "6 units",
+            "C": "5 units",
+            "D": ""
+        },
+        "option_images": {},
+        "answer": "D"
+    },
+    {
+        "question_number": 26,
+        "question_text": "There were 298 hens and cows on a farm. ",
+        "images": [
+            "extracted_images/page_10_img_3.png"
+        ],
+        "options": {
+            "A": "138",
+            "B": "140",
+            "C": "",
+            "D": "144"
+        },
+        "option_images": {},
+        "answer": "C"
+    },
+    {
+        "question_number": 27,
+        "question_text": "Write the correct time for the clock shown below. ",
+        "images": [
+            "extracted_images/page_10_img_3.png"
+        ],
+        "options": {
+            "A": "",
+            "B": "5 : 40",
+            "C": "6 : 20",
+            "D": "3 : 20"
+        },
+        "option_images": {},
+        "answer": "A"
+    },
+    {
+        "question_number": 28,
+        "question_text": "Sumit has following flowers and balloons. ",
+        "images": [],
+        "options": {
+            "A": "Flowers are more than balloons.",
+            "B": "Flowers are equal to balloons.",
+            "C": "",
+            "D": "Balloons are 2 more than flowers."
+        },
+        "option_images": {},
+        "answer": "C"
+    },
+    {
+        "question_number": 29,
+        "question_text": "A bag of rice weighs 3 kg. How much do 6 bags of rice ",
+        "images": [
+            "extracted_images/page_11_img_3.png"
+        ],
+        "options": {
+            "A": "",
+            "B": "24 kg",
+            "C": "15 kg",
+            "D": "17 kg"
+        },
+        "option_images": {},
+        "answer": "A"
+    },
+    {
+        "question_number": 30,
+        "question_text": "If only all Saturdays and Sundays are holidays, then in the ",
+        "images": [
+            "extracted_images/page_11_img_3.png"
+        ],
+        "options": {
+            "A": "6",
+            "B": "8",
+            "C": "10",
+            "D": "7"
+        },
+        "option_images": {},
+        "answer": "Not Found"
+    },
+    {
+        "question_number": 31,
+        "question_text": "How much do the counters add up to? ",
+        "images": [
+            "extracted_images/page_12_img_1.png"
+        ],
+        "options": {
+            "A": "",
+            "B": "235",
+            "C": "325",
+            "D": "532"
+        },
+        "option_images": {},
+        "answer": "A"
+    },
+    {
+        "question_number": 32,
+        "question_text": "The packet of rice has a mass of _______________ kg. ",
+        "images": [],
+        "options": {},
+        "option_images": {},
+        "answer": "Not Found"
+    },
+    {
+        "question_number": 33,
+        "question_text": "Fill in the blank:  ",
+        "images": [
+            "extracted_images/page_13_img_1.png"
+        ],
+        "options": {
+            "A": "Equal to",
+            "B": "",
+            "C": "Heavier than [D] None of these"
+        },
+        "option_images": {},
+        "answer": "B"
+    },
+    {
+        "question_number": 34,
+        "question_text": "Which of the following is the CORRECT way of writing 8 ",
+        "images": [
+            "extracted_images/page_13_img_2.png"
+        ],
+        "options": {
+            "A": "",
+            "B": "14 + 8 = 6",
+            "C": "14 \u2013 6 = 8",
+            "D": "14 + 6 = 8"
+        },
+        "option_images": {},
+        "answer": "A"
+    },
+    {
+        "question_number": 35,
+        "question_text": "Tonu gave Rs 50 to buy this ball. How much money will he ",
+        "images": [
+            "extracted_images/page_13_img_2.png"
+        ],
+        "options": {
+            "A": "Rs 15",
+            "B": "Rs  25",
+            "C": "Rs 20",
+            "D": "Rs 17"
+        },
+        "option_images": {},
+        "answer": "Not Found"
+    }
+]
