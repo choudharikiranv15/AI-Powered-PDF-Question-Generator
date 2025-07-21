@@ -120,16 +120,20 @@
 
         /**
          * Finds which page a given question number is on.
-         * This is a simplified text search.
+         * This improved function searches backwards and uses a more specific pattern.
          */
         async function findPageForQuestion(pdfDoc, questionNumber) {
-            const questionPattern = `${questionNumber}.`;
-            for (let i = 1; i <= pdfDoc.numPages; i++) {
+            // This regex looks for the question number at the beginning of a line, followed by a period.
+            const questionPattern = new RegExp(`(^|\\n)\\s*${questionNumber}\\.`);
+
+            // Search backwards from the last page.
+            for (let i = pdfDoc.numPages; i >= 1; i--) {
                 const page = await pdfDoc.getPage(i);
                 const textContent = await page.getTextContent();
-                const pageText = textContent.items.map(item => item.str).join(' ');
-                if (pageText.includes(questionPattern)) {
-                    return i;
+                // Join with newlines to preserve line breaks for the regex.
+                const pageText = textContent.items.map(item => item.str).join('\n');
+                if (questionPattern.test(pageText)) {
+                    return i; // Return the first match found while searching backwards.
                 }
             }
             return null; // Question number not found
@@ -189,10 +193,11 @@
             const model = 'gemini-1.5-flash';
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
             
-            const prompt = `Analyze the provided image, which is a page from a 1st-grade math worksheet. Your task is to focus specifically on question number ${questionNumber}. 
+            const prompt = `Analyze the provided image, which is a page from a math competition paper. Your task is to locate the official question numbered ${questionNumber}. 
             
-First, identify the text and any visual elements associated with question ${questionNumber}. 
-Then, create one new, different math question that is suitable for a 1st grader, based on the visual information for that specific question.
+Be very careful to distinguish between question numbers and numbers in the 'INSTRUCTIONS' section. The actual questions are typically found after the instructions section.
+
+Once you have visually located the correct question ${questionNumber} and its associated text or diagrams, create one new, different math or logic question that is of a similar style and difficulty, based on the content of that specific question.
 
 Generate only the new question text, without any extra explanation or preamble.`;
 
