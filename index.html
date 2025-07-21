@@ -17,6 +17,10 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .correct-answer {
+            background-color: #d1fae5; /* A light green background */
+            border-left: 4px solid #10b981; /* A solid green border */
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -28,7 +32,6 @@
         </header>
 
         <main class="bg-white p-6 rounded-2xl shadow-lg space-y-6">
-            <!-- Step 1: Setup -->
             <div>
                 <h2 class="text-2xl font-semibold mb-4 border-b pb-2">1. Setup</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -43,7 +46,6 @@
                 </div>
             </div>
 
-            <!-- Step 2: Question Selection -->
             <div>
                 <h2 class="text-2xl font-semibold mb-4 border-b pb-2">2. Generate Question</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
@@ -52,12 +54,11 @@
                         <input type="number" id="question-number-input" placeholder="e.g., 5" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <button id="generate-btn" class="w-full bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out disabled:bg-gray-400">
-                        Generate with AI
+                        Generate MCQ with AI
                     </button>
                 </div>
             </div>
 
-            <!-- Status and Result Section -->
             <div id="status-section" class="text-center my-4 hidden">
                 <div class="flex items-center justify-center">
                     <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mr-3"></div>
@@ -73,8 +74,7 @@
                          <img id="page-image" class="w-full rounded-md shadow-sm" alt="PDF Page Image">
                     </div>
                     <div id="ai-result-box" class="p-4 bg-blue-50 rounded-lg border border-blue-200 text-gray-800 prose max-w-none">
-                        <!-- AI result will be inserted here -->
-                    </div>
+                        </div>
                 </div>
             </div>
         </main>
@@ -103,12 +103,9 @@
             pdfFile = event.target.files[0];
         });
 
-        /**
-         * Renders a specific page of a PDF to a canvas and returns it as a Data URL.
-         */
         async function getPageAsImage(pdfDoc, pageNum) {
             const page = await pdfDoc.getPage(pageNum);
-            const viewport = page.getViewport({ scale: 1.5 }); // Higher scale for better quality
+            const viewport = page.getViewport({ scale: 1.5 });
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             canvas.height = viewport.height;
@@ -118,30 +115,19 @@
             return canvas.toDataURL('image/png');
         }
 
-        /**
-         * Finds which page a given question number is on.
-         * This improved function searches backwards and uses a more specific pattern.
-         */
         async function findPageForQuestion(pdfDoc, questionNumber) {
-            // This regex looks for the question number at the beginning of a line, followed by a period.
             const questionPattern = new RegExp(`(^|\\n)\\s*${questionNumber}\\.`);
-
-            // Search backwards from the last page.
             for (let i = pdfDoc.numPages; i >= 1; i--) {
                 const page = await pdfDoc.getPage(i);
                 const textContent = await page.getTextContent();
-                // Join with newlines to preserve line breaks for the regex.
                 const pageText = textContent.items.map(item => item.str).join('\n');
                 if (questionPattern.test(pageText)) {
-                    return i; // Return the first match found while searching backwards.
+                    return i;
                 }
             }
-            return null; // Question number not found
+            return null;
         }
 
-        /**
-         * Main generation logic.
-         */
         generateBtn.addEventListener('click', async () => {
             const apiKey = apiKeyInput.value.trim();
             const questionNumber = questionNumberInput.value;
@@ -171,10 +157,10 @@
                 const imageDataUrl = await getPageAsImage(pdfDoc, pageNum);
                 pageImage.src = imageDataUrl;
 
-                statusMessage.textContent = 'Asking AI to generate a new question... 🤖';
-                const newQuestion = await callGeminiApi(apiKey, imageDataUrl, questionNumber);
+                statusMessage.textContent = 'Asking AI to generate a new MCQ... 🤖';
+                const mcqData = await callGeminiApi(apiKey, imageDataUrl, questionNumber);
 
-                aiResultBox.innerHTML = newQuestion.replace(/\n/g, '<br>');
+                displayMcq(mcqData);
                 resultSection.classList.remove('hidden');
 
             } catch (error) {
@@ -186,20 +172,29 @@
             }
         });
 
-        /**
-         * Calls the Google Gemini API with the page image and prompt.
-         */
         async function callGeminiApi(apiKey, imageDataUrl, questionNumber) {
-            const model = 'gemini-1.5-flash';
+            // --- REVERTED TO gemini-1.5-flash ---
+            const model = 'gemini-1.5-flash'; // This is a reliable and available model
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
             
             const prompt = `Analyze the provided image, which is a page from a math competition paper. Your task is to locate the official question numbered ${questionNumber}. 
             
 Be very careful to distinguish between question numbers and numbers in the 'INSTRUCTIONS' section. The actual questions are typically found after the instructions section.
 
-Once you have visually located the correct question ${questionNumber} and its associated text or diagrams, create one new, different math or logic question that is of a similar style and difficulty, based on the content of that specific question.
+Once you have visually located the correct question ${questionNumber} and its associated text or diagrams, create one new, different math or logic question that is of a similar style and difficulty. This new question must be a multiple-choice question (MCQ).
 
-Generate only the new question text, without any extra explanation or preamble.`;
+Your response MUST be a valid JSON object with the following structure and nothing else:
+{
+  "question": "The text of the new question",
+  "options": {
+    "A": "Option A text",
+    "B": "Option B text",
+    "C": "Option C text",
+    "D": "Option D text"
+  },
+  "correct_answer": "A"
+}
+`;
 
             const imageBase64 = imageDataUrl.split(',')[1];
             const requestBody = {
@@ -211,23 +206,66 @@ Generate only the new question text, without any extra explanation or preamble.`
                 }]
             };
 
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
-            });
+            let response;
+            const maxRetries = 3;
+            let attempt = 0;
+            while (attempt < maxRetries) {
+                try {
+                    statusMessage.textContent = `Asking AI... (Attempt ${attempt + 1})`;
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestBody)
+                    });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error.message || 'API request failed');
+                    if (response.ok) {
+                        break;
+                    }
+
+                    if (response.status === 503) {
+                        throw new Error("The model is overloaded. Retrying...");
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error.message || `API request failed with status ${response.status}`);
+                    }
+                } catch (error) {
+                    attempt++;
+                    if (attempt >= maxRetries) {
+                        throw new Error("The model is overloaded. Please try again later.");
+                    }
+                    const delay = Math.pow(2, attempt) * 1000;
+                    statusMessage.textContent = `${error.message} Waiting ${delay / 1000}s.`;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
             }
 
             const data = await response.json();
-            if (!data.candidates || !data.candidates[0].content.parts[0].text) {
-                throw new Error("The AI did not return a valid response. Please try again.");
+            const rawText = data.candidates[0].content.parts[0].text;
+            
+            const jsonText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+            
+            try {
+                return JSON.parse(jsonText);
+            } catch (e) {
+                console.error("Failed to parse AI response as JSON:", jsonText);
+                throw new Error("The AI returned a response that was not in the correct JSON format.");
             }
-            return data.candidates[0].content.parts[0].text;
         }
+        
+        function displayMcq(mcqData) {
+            let html = `<p class="font-semibold text-lg mb-4">${mcqData.question}</p>`;
+            html += `<ul class="space-y-2">`;
+            
+            for (const key in mcqData.options) {
+                const isCorrect = key === mcqData.correct_answer;
+                const optionClass = isCorrect ? 'correct-answer' : '';
+                html += `<li class="p-2 rounded-md ${optionClass}"><strong>${key})</strong> ${mcqData.options[key]}</li>`;
+            }
+            
+            html += `</ul>`;
+            aiResultBox.innerHTML = html;
+        }
+
     </script>
 </body>
 </html>
