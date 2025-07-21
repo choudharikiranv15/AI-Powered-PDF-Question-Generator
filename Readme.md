@@ -1,73 +1,119 @@
-AI-Powered PDF Question Generator
-Problem Statement
-Educators and content creators often face the challenge of generating a large volume of practice questions from existing materials, such as educational PDFs. Manually creating new and varied questions from a static document is a time-consuming and repetitive task. This project aims to solve that problem by providing an intelligent tool that automates the question generation process, leveraging modern AI to create fresh, relevant questions from PDF content.
+# 📘 AI-Powered PDF Question Generator
 
-Project Overview
-This project is a web-based application that analyzes educational PDF documents and uses a multimodal AI to generate new questions based on the document's content. The tool allows a user to upload a PDF, target a specific question number, and receive a new, AI-generated question based on the visual context of the page where the original question appears.
+## 🧠 Problem Statement
 
-The final implementation is a single, self-contained index.html file that leverages modern web technologies to provide a seamless user experience directly in the browser. This approach bypasses the complexities and common errors associated with server-side PDF content extraction.
+Educators and content creators often struggle to generate large volumes of practice questions from existing educational PDFs. Manually crafting these questions is time-consuming and repetitive.
 
-Key Features
-Direct PDF Upload: Users can upload PDF files directly in the browser.
+This project aims to solve that problem by providing a **smart, AI-powered tool** that can automatically generate new, relevant questions based on the visual content of any given PDF page.
 
-Intelligent Page Analysis: The application automatically finds the correct page associated with a user-specified question number.
+---
 
-AI-Powered Generation: It uses the Google Gemini 1.5 Flash model to understand the visual context of a PDF page and generate a new, relevant question.
+## 🚀 Project Overview
 
-Self-Contained & Serverless: The entire application runs in a single HTML file, requiring no backend or server setup.
+The **AI-Powered PDF Question Generator** is a **fully client-side, browser-based tool** that lets users:
 
-Technologies Used
-Frontend: HTML5, Tailwind CSS
+- Upload an educational PDF.
+- Enter a question number.
+- Automatically generate a fresh AI-powered question based on that page's context.
 
-JavaScript Libraries:
+The tool uses **Google Gemini 1.5 Flash**, a multimodal AI model, to analyze the **visual content of the page**, not just the text — solving the common problem of unreliable content extraction from PDFs.
 
-PDF.js (by Mozilla): For rendering PDF documents and their pages into images directly in the browser.
+---
 
-Google Gemini API (via fetch): To send page images and prompts to the gemini-1.5-flash model for analysis and question generation.
+## 🧩 Key Features
 
-AI Model: Google Gemini 1.5 Flash
+✅ Direct PDF upload in the browser  
+✅ Automatically finds the page based on question number  
+✅ AI-generated questions from full page image context  
+✅ No server, backend, or deployment needed — works from a single HTML file  
+✅ Uses PDF.js to render pages and Google Gemini for question generation
 
-How It Works
-The application follows a robust, modern workflow to ensure reliability and accuracy:
+---
 
-PDF Loading: The user uploads a PDF file and provides a Google AI API Key.
+## 🛠️ Technologies Used
 
-Page Identification: When the user enters a question number, the application uses PDF.js to search through the text content of each page to find which page that question is on.
+| Tech / Library              | Purpose                                                   |
+| --------------------------- | --------------------------------------------------------- |
+| **HTML5**, **Tailwind CSS** | Responsive, modern UI                                     |
+| **JavaScript**              | Frontend logic and interactions                           |
+| **PDF.js** (by Mozilla)     | PDF parsing and page rendering to image in-browser        |
+| **Google Gemini 1.5 Flash** | Multimodal AI for image understanding and text generation |
+| **fetch API**               | Communicate with Gemini API from browser                  |
 
-Page-to-Image Rendering: Instead of trying to extract individual, often problematic, image and text objects, the application renders the entire identified page into a high-quality PNG image.
+---
 
-AI-Powered Analysis: This single page image is sent to the Gemini API along with a carefully crafted prompt. The prompt instructs the AI to locate the specified question number on the page image and generate a new question based on its context.
+## 🔄 How It Works
 
-Display Results: The application displays both the original page image and the newly generated question, providing a complete and context-rich experience for the user.
+1. **Upload PDF**: User selects a PDF file from their device.
+2. **Enter API Key**: User enters their Google Gemini API key.
+3. **Locate Question Page**: The app finds which page contains the entered question number.
+4. **Render Page Image**: That page is rendered into a high-quality PNG using PDF.js.
+5. **AI Prompting**: The image is sent to Gemini with a custom prompt asking it to generate a new question.
+6. **Display Result**: The original page and the new question are shown side-by-side.
 
-This approach is highly effective because it delegates the complex task of parsing the visual layout to the powerful multimodal AI, solving the errors related to direct content extraction.
+> ✅ This process offloads complex parsing to Gemini AI, ensuring reliable, visually-aware results.
 
-How to Run the Application
-To run this project, you only need a modern web browser and the final HTML file.
+---
 
-Save the Code: Save the final application code as a single HTML file (e.g., index.html).
+## 🧪 How to Run the Application
 
-Get an API Key:
+> 🖥️ **Requirements**: Any modern web browser (Chrome, Firefox, Edge)
 
-Go to Google AI Studio.
+1. **Download/Clone Repo**:  
+   Clone or download this repository.
 
-Create a new project and generate an API key.
+2. **Open the App**:  
+   Open `index.html` in your browser.
 
-Open the Application: Open the index.html file in a web browser (like Google Chrome, Firefox, or Edge).
+3. **Generate API Key**:
 
-Use the Interface:
+   - Visit [Google AI Studio](https://makersuite.google.com/app)
+   - Create a new project and get your **Gemini API Key**
 
-Click "Choose File" to upload a PDF document.
+4. **Use the Tool**:
 
-Paste your Google AI API Key into the input field.
+   - Upload a PDF.
+   - Paste your Gemini API key.
+   - Enter a question number (e.g., `Q15`).
+   - Click **"Generate with AI"**.
 
-Enter a question number from the PDF into the designated field.
+5. **View Output**:
+   - You'll see the original page and a newly generated AI question based on its context.
 
-Click the "Generate with AI" button.
+---
 
-View the Result: The application will process the request and display the original PDF page and the newly generated question side-by-side.
+## 📸 Screenshots
 
-![Alt Text](D:\kiran\Web developement\Task\Testline\assets\Screenshot 2025-07-21 200957.png)
-![Alt Text](D:\kiran\Web developement\Task\Testline\assets\Screenshot 2025-07-21 201020.png)
-![Alt Text](D:\kiran\Web developement\Task\Testline\assets\Screenshot 2025-07-21 201101.png)
-![Alt Text](assets\Screenshot 2025-07-21 201122.png)
+> _Screenshots of the application in action:_
+
+### 🖼️ Interface Overview
+
+![Interface Overview](assets/Screenshot%202025-07-21%20200957.png)
+
+### 🔑 API Key and Upload
+
+![API Key Input](assets/Screenshot%202025-07-21%20201020.png)
+
+### 🔍 Page Detection
+
+![Page Detection](assets/Screenshot%202025-07-21%20201101.png)
+
+### 🧠 AI-Generated Question
+
+![Generated Question](assets/Screenshot%202025-07-21%20201122.png)
+
+---
+
+## 📌 Final Notes
+
+- This is a **100% frontend-only** solution — perfect for educators, creators, or students who want quick, AI-enhanced question generation without setup.
+- Future upgrades may include export to DOCX/PDF, MCQ formatting, or image-based question generation across multiple pages.
+
+---
+
+## 📩 Feedback & Contributions
+
+Contributions and suggestions are welcome!  
+Feel free to submit an issue or open a pull request to enhance this tool.
+
+---
