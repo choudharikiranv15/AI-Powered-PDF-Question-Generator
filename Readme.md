@@ -123,7 +123,7 @@ Please note:
 
 ### 🧠 AI-Generated MCQ with Highlighted Answer
 
-![Generated Question](assets/image.png)
+![Generated Question](assets/result.png)
 
 ![Generated Question](assets/image1.png)
 
