@@ -5,7 +5,7 @@ import os
 
 # --- SETUP ---
 # IMPORTANT: Replace with your actual API key
-API_KEY = "AIzaSyBCaZkrTX_b2m73KFKD3LDjnf2hXoEF0iU"
+API_KEY = "Enter your API key here"
 STRUCTURED_JSON_FILE = "questions_final.json"
 # Let's try Q19 (the trees) or 5 (bananas)
 TARGET_QUESTION_NUMBER = int(input("Enter the question number: "))
