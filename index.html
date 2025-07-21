@@ -98,6 +98,7 @@
         const aiResultBox = document.getElementById('ai-result-box');
 
         let pdfFile = null;
+        const apiCache = {}; 
 
         pdfUploadInput.addEventListener('change', (event) => {
             pdfFile = event.target.files[0];
@@ -105,14 +106,14 @@
 
         async function getPageAsImage(pdfDoc, pageNum) {
             const page = await pdfDoc.getPage(pageNum);
-            const viewport = page.getViewport({ scale: 1.5 });
+            const viewport = page.getViewport({ scale: 1.2 });
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             canvas.height = viewport.height;
             canvas.width = viewport.width;
 
             await page.render({ canvasContext: context, viewport: viewport }).promise;
-            return canvas.toDataURL('image/png');
+            return canvas.toDataURL('image/jpeg', 0.9);
         }
 
         async function findPageForQuestion(pdfDoc, questionNumber) {
@@ -122,7 +123,8 @@
                 const textContent = await page.getTextContent();
                 const pageText = textContent.items.map(item => item.str).join('\n');
                 if (questionPattern.test(pageText)) {
-                    return i;
+                    const originalQuestionText = pageText.split(questionPattern)[2].trim().split('\n')[0];
+                    return { pageNum: i, originalQuestionText: originalQuestionText };
                 }
             }
             return null;
@@ -142,23 +144,37 @@
             generateBtn.disabled = true;
 
             try {
+                const cacheKey = `${pdfFile.name}-${questionNumber}`;
+                if (apiCache[cacheKey]) {
+                    statusMessage.textContent = 'Loading from cache...';
+                    statusSection.classList.remove('hidden');
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    displayMcq(apiCache[cacheKey]);
+                    pageImage.src = apiCache[cacheKey].pageImage;
+                    resultSection.classList.remove('hidden');
+                    return;
+                }
+
                 statusMessage.textContent = 'Loading PDF...';
                 const typedarray = new Uint8Array(await pdfFile.arrayBuffer());
                 const pdfDoc = await pdfjsLib.getDocument({ data: typedarray }).promise;
 
                 statusMessage.textContent = `Finding page for question #${questionNumber}...`;
-                const pageNum = await findPageForQuestion(pdfDoc, questionNumber);
+                const pageInfo = await findPageForQuestion(pdfDoc, questionNumber);
 
-                if (!pageNum) {
+                if (!pageInfo) {
                     throw new Error(`Could not find question number ${questionNumber} in the PDF.`);
                 }
 
-                statusMessage.textContent = `Rendering page ${pageNum}...`;
-                const imageDataUrl = await getPageAsImage(pdfDoc, pageNum);
+                statusMessage.textContent = `Rendering page ${pageInfo.pageNum}...`;
+                const imageDataUrl = await getPageAsImage(pdfDoc, pageInfo.pageNum);
                 pageImage.src = imageDataUrl;
 
                 statusMessage.textContent = 'Asking AI to generate a new MCQ... 🤖';
-                const mcqData = await callGeminiApi(apiKey, imageDataUrl, questionNumber);
+                const mcqData = await callGeminiApi(apiKey, imageDataUrl, pageInfo.originalQuestionText);
+
+                mcqData.pageImage = imageDataUrl;
+                apiCache[cacheKey] = mcqData;
 
                 displayMcq(mcqData);
                 resultSection.classList.remove('hidden');
@@ -172,18 +188,20 @@
             }
         });
 
-        async function callGeminiApi(apiKey, imageDataUrl, questionNumber) {
-            // --- REVERTED TO gemini-1.5-flash ---
-            const model = 'gemini-1.5-flash'; // This is a reliable and available model
+        async function callGeminiApi(apiKey, imageDataUrl, originalQuestionText) {
+            const model = 'gemini-1.5-flash';
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
             
-            const prompt = `Analyze the provided image, which is a page from a math competition paper. Your task is to locate the official question numbered ${questionNumber}. 
+            // --- NEW, MORE DETAILED PROMPT ---
+            const prompt = `You are an expert in creating educational material for young students.
             
-Be very careful to distinguish between question numbers and numbers in the 'INSTRUCTIONS' section. The actual questions are typically found after the instructions section.
+1.  **Analyze the context:** The user has provided an image of a PDF page and the original question text from that page.
+    * **Original Question Text:** "${originalQuestionText}"
+    * From this, understand the topic (e.g., telling time, simple counting, addition) and the difficulty level (e.g., for a 1st grader).
 
-Once you have visually located the correct question ${questionNumber} and its associated text or diagrams, create one new, different math or logic question that is of a similar style and difficulty. This new question must be a multiple-choice question (MCQ).
+2.  **Your Task:** Create one new multiple-choice question (MCQ) that is **on the same topic and of a similar difficulty level**. Use the visual information from the image if relevant.
 
-Your response MUST be a valid JSON object with the following structure and nothing else:
+3.  **Format your response:** Your response MUST be a valid JSON object with the following structure and nothing else:
 {
   "question": "The text of the new question",
   "options": {
@@ -201,7 +219,7 @@ Your response MUST be a valid JSON object with the following structure and nothi
                 contents: [{
                     parts: [
                         { text: prompt },
-                        { inline_data: { mime_type: 'image/png', data: imageBase64 } }
+                        { inline_data: { mime_type: 'image/jpeg', data: imageBase64 } }
                     ]
                 }]
             };

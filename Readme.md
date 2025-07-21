@@ -14,7 +14,7 @@ The **AI-Powered PDF Question Generator** is a **fully client-side, browser-base
 
 - Upload an educational PDF.
 - Enter a question number.
-- Automatically generate a fresh AI-powered question based on that page's context.
+- Automatically generate a fresh, AI-powered **multiple-choice question (MCQ)** based on that page’s context, complete with four options and the correct answer.
 
 The tool uses **Google Gemini 1.5 Flash**, a multimodal AI model, to analyze the **visual content of the page**, not just the text — solving the common problem of unreliable content extraction from PDFs.
 
@@ -24,9 +24,29 @@ The tool uses **Google Gemini 1.5 Flash**, a multimodal AI model, to analyze the
 
 ✅ Direct PDF upload in the browser  
 ✅ Automatically finds the page based on question number  
-✅ AI-generated questions from full page image context  
+✅ AI-generated **MCQ with 4 options and answer**  
+✅ Answer is visually **highlighted in green**  
 ✅ No server, backend, or deployment needed — works from a single HTML file  
 ✅ Uses PDF.js to render pages and Google Gemini for question generation
+
+---
+
+## ⚠️ Caution: API Model Limitations
+
+Please note:
+
+> The app uses **Google Gemini 1.5 Flash (basic/free tier)** via API.  
+> This model is sometimes **overloaded**, especially during peak hours.  
+> You might experience:
+>
+> - **Slower responses**
+> - Occasional **failures to generate a response**
+> - Empty or incomplete answers
+
+**Suggested Fixes:**
+
+- Retry after a few minutes if the response is empty.
+- Consider switching to a paid Gemini tier for more consistent performance (if available in your region).
 
 ---
 
@@ -48,10 +68,11 @@ The tool uses **Google Gemini 1.5 Flash**, a multimodal AI model, to analyze the
 2. **Enter API Key**: User enters their Google Gemini API key.
 3. **Locate Question Page**: The app finds which page contains the entered question number.
 4. **Render Page Image**: That page is rendered into a high-quality PNG using PDF.js.
-5. **AI Prompting**: The image is sent to Gemini with a custom prompt asking it to generate a new question.
-6. **Display Result**: The original page and the new question are shown side-by-side.
-
-> ✅ This process offloads complex parsing to Gemini AI, ensuring reliable, visually-aware results.
+5. **AI Prompting**: The image is sent to Gemini with a custom prompt asking it to generate a new MCQ.
+6. **Display Result**:
+   - The app shows the original PDF page.
+   - It displays a new MCQ with **4 options**.
+   - The **correct answer is highlighted in green** for clarity.
 
 ---
 
@@ -78,7 +99,9 @@ The tool uses **Google Gemini 1.5 Flash**, a multimodal AI model, to analyze the
    - Click **"Generate with AI"**.
 
 5. **View Output**:
-   - You'll see the original page and a newly generated AI question based on its context.
+   - You’ll see the original PDF page on the left.
+   - On the right, a new AI-generated **multiple-choice question with four options** will appear.
+   - The **correct answer will be highlighted in green**.
 
 ---
 
@@ -98,22 +121,26 @@ The tool uses **Google Gemini 1.5 Flash**, a multimodal AI model, to analyze the
 
 ![Page Detection](assets/Screenshot%202025-07-21%20201101.png)
 
-### 🧠 AI-Generated Question
+### 🧠 AI-Generated MCQ with Highlighted Answer
 
-![Generated Question](assets/Screenshot%202025-07-21%20201122.png)
+![Generated Question](assets/image.png)
 
 ---
 
 ## 📌 Final Notes
 
-- This is a **100% frontend-only** solution — perfect for educators, creators, or students who want quick, AI-enhanced question generation without setup.
-- Future upgrades may include export to DOCX/PDF, MCQ formatting, or image-based question generation across multiple pages.
+- This is a **100% frontend-only** solution — perfect for educators, content creators, and students who need fast, AI-assisted question generation without server setups.
+- The new MCQ feature ensures each generated question is **structured and ready for practice or testing**.
+- Future upgrades may include:
+  - Exporting generated questions to PDF/DOCX.
+  - Batch question generation across entire PDFs.
+  - Saving/exporting quiz sets.
 
 ---
 
 ## 📩 Feedback & Contributions
 
 Contributions and suggestions are welcome!  
-Feel free to submit an issue or open a pull request to enhance this tool.
+Feel free to open an issue or submit a pull request to help improve this tool.
 
 ---
