@@ -74,7 +74,12 @@
                          <img id="page-image" class="w-full rounded-md shadow-sm" alt="PDF Page Image">
                     </div>
                     <div id="ai-result-box" class="p-4 bg-blue-50 rounded-lg border border-blue-200 text-gray-800 prose max-w-none">
+                        <div id="fallback-notice" class="hidden p-3 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded-md">
+                            <p class="font-bold">Notice:</p>
+                            <p>The AI service is currently busy and could not generate a question. Please try again in a few moments.</p>
                         </div>
+                        <!-- AI content will be inserted here -->
+                    </div>
                 </div>
             </div>
         </main>
@@ -94,6 +99,7 @@
         const statusSection = document.getElementById('status-section');
         const statusMessage = document.getElementById('status-message');
         const resultSection = document.getElementById('result-section');
+        const fallbackNotice = document.getElementById('fallback-notice');
         const pageImage = document.getElementById('page-image');
         const aiResultBox = document.getElementById('ai-result-box');
 
@@ -123,7 +129,8 @@
                 const textContent = await page.getTextContent();
                 const pageText = textContent.items.map(item => item.str).join('\n');
                 if (questionPattern.test(pageText)) {
-                    const originalQuestionText = pageText.split(questionPattern)[2].trim().split('\n')[0];
+                    const match = pageText.match(new RegExp(`(^|\\n)\\s*${questionNumber}\\.\\s*(.*)`));
+                    const originalQuestionText = match ? match[2].trim() : '';
                     return { pageNum: i, originalQuestionText: originalQuestionText };
                 }
             }
@@ -141,7 +148,11 @@
 
             statusSection.classList.remove('hidden');
             resultSection.classList.add('hidden');
+            fallbackNotice.classList.add('hidden');
             generateBtn.disabled = true;
+
+            let pageInfo;
+            let imageDataUrl;
 
             try {
                 const cacheKey = `${pdfFile.name}-${questionNumber}`;
@@ -160,14 +171,14 @@
                 const pdfDoc = await pdfjsLib.getDocument({ data: typedarray }).promise;
 
                 statusMessage.textContent = `Finding page for question #${questionNumber}...`;
-                const pageInfo = await findPageForQuestion(pdfDoc, questionNumber);
+                pageInfo = await findPageForQuestion(pdfDoc, questionNumber);
 
                 if (!pageInfo) {
                     throw new Error(`Could not find question number ${questionNumber} in the PDF.`);
                 }
 
                 statusMessage.textContent = `Rendering page ${pageInfo.pageNum}...`;
-                const imageDataUrl = await getPageAsImage(pdfDoc, pageInfo.pageNum);
+                imageDataUrl = await getPageAsImage(pdfDoc, pageInfo.pageNum);
                 pageImage.src = imageDataUrl;
 
                 statusMessage.textContent = 'Asking AI to generate a new MCQ... 🤖';
@@ -181,7 +192,18 @@
 
             } catch (error) {
                 console.error('Generation failed:', error);
-                alert(`An error occurred: ${error.message}`);
+                
+                // --- NEW FALLBACK: Display notice only ---
+                if (pageInfo && imageDataUrl) {
+                    pageImage.src = imageDataUrl; // Show the original page
+                    aiResultBox.innerHTML = ''; // Clear any previous results
+                    fallbackNotice.classList.remove('hidden'); // Show the notice
+                    aiResultBox.appendChild(fallbackNotice); // Place notice inside the result box
+                    resultSection.classList.remove('hidden');
+                } else {
+                    alert(`An error occurred: ${error.message}`);
+                }
+
             } finally {
                 statusSection.classList.add('hidden');
                 generateBtn.disabled = false;
@@ -192,7 +214,6 @@
             const model = 'gemini-1.5-flash';
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
             
-            // --- NEW, MORE DETAILED PROMPT ---
             const prompt = `You are an expert in creating educational material for young students.
             
 1.  **Analyze the context:** The user has provided an image of a PDF page and the original question text from that page.
@@ -228,32 +249,28 @@
             const maxRetries = 3;
             let attempt = 0;
             while (attempt < maxRetries) {
-                try {
-                    statusMessage.textContent = `Asking AI... (Attempt ${attempt + 1})`;
-                    response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(requestBody)
-                    });
+                statusMessage.textContent = `Asking AI... (Attempt ${attempt + 1})`;
+                response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
 
-                    if (response.ok) {
-                        break;
-                    }
+                if (response.ok) {
+                    break;
+                }
 
-                    if (response.status === 503) {
-                        throw new Error("The model is overloaded. Retrying...");
-                    } else {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error.message || `API request failed with status ${response.status}`);
-                    }
-                } catch (error) {
+                if (response.status === 503) {
                     attempt++;
                     if (attempt >= maxRetries) {
                         throw new Error("The model is overloaded. Please try again later.");
                     }
                     const delay = Math.pow(2, attempt) * 1000;
-                    statusMessage.textContent = `${error.message} Waiting ${delay / 1000}s.`;
+                    statusMessage.textContent = `Model is busy. Retrying in ${delay / 1000}s...`;
                     await new Promise(resolve => setTimeout(resolve, delay));
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error.message || `API request failed with status ${response.status}`);
                 }
             }
 
@@ -271,6 +288,10 @@
         }
         
         function displayMcq(mcqData) {
+            // Clear the box and hide the notice before adding new content
+            aiResultBox.innerHTML = '';
+            fallbackNotice.classList.add('hidden');
+
             let html = `<p class="font-semibold text-lg mb-4">${mcqData.question}</p>`;
             html += `<ul class="space-y-2">`;
             
